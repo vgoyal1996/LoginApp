@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "212177005338",
+    "firebase_url": "https://loginapp-a9eae.firebaseio.com",
+    "project_id": "loginapp-a9eae",
+    "storage_bucket": "loginapp-a9eae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212177005338:android:8f05c9e1982082b6",
+        "android_client_info": {
+          "package_name": "com.example.vipul.loginapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "212177005338-5d4vbpskg8fmu473v7ma7li67u021s0p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAD_5ZjRi1F24Fi1lFtL_CUqGDWtpFAkBA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
