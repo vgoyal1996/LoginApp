@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
@@ -81,7 +82,43 @@ public class SignUpActivity extends AppCompatActivity {
                 t.start();
             }
         });
+
+        /*FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    //sendVerificationEmail(user);
+                } else {
+                    Toast.makeText(SignUpActivity.this,"Error creating account",Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            }
+        };*/
     }
+
+    /*private boolean checkIfEmailVerified(FirebaseUser user)
+    {
+        user.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseAuth.getInstance().signOut();
+                            startActivity(new Intent(SignUpActivity.this, UserActivity.class));
+                            finish();
+                        }
+                        else
+                        {
+                            overridePendingTransition(0, 0);
+                            finish();
+                            overridePendingTransition(0, 0);
+                            startActivity(getIntent());
+
+                        }
+                    }
+                });
+    }*/
 
     private class UserThread implements Runnable{
         Context context;
@@ -129,14 +166,44 @@ public class SignUpActivity extends AppCompatActivity {
                             handler.sendMessage(m);
                         }
                         else{
-                            String instanceId = FirebaseInstanceId.getInstance().getToken();
-                            String uid = createdUser.getResult().getUser().getUid();
-                            handler.sendEmptyMessage(1);
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            user.sendEmailVerification()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                String instanceId = FirebaseInstanceId.getInstance().getToken();
+                                                String uid = createdUser.getResult().getUser().getUid();
+                                                handler.sendEmptyMessage(1);
+                                            }
+                                            else {
+                                                Message m = new Message();
+                                                m.what = 7;
+                                                handler.sendMessage(m);
+                                            }
+                                        }
+                                    });
+                            /*if(checkIfEmailVerified()) {
+                                String instanceId = FirebaseInstanceId.getInstance().getToken();
+                                String uid = createdUser.getResult().getUser().getUid();
+                                handler.sendEmptyMessage(1);
+                            }
+                            else{
+                                Message m = new Message();
+                                m.what = 7;
+                                handler.sendMessage(m);
+                            }*/
                         }
                     }
                 });
             }
         }
+
+        /*private boolean checkIfEmailVerified()
+        {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            return user.isEmailVerified();
+        }*/
 
         private Handler handler = new Handler(){
             @Override
@@ -145,6 +212,7 @@ public class SignUpActivity extends AppCompatActivity {
                 pd.dismiss();
                 switch (msg.what){
                     case 1:
+                        Toast.makeText(SignUpActivity.this,"Verification Email sent",Toast.LENGTH_LONG).show();
                         startActivity(new Intent(SignUpActivity.this, MainActivity.class));
                         //overridePendingTransition(R.anim.anim_enter,R.anim.anim_leave);
                         finish();
@@ -163,6 +231,12 @@ public class SignUpActivity extends AppCompatActivity {
                         break;
                     case 6:
                         Toast.makeText(SignUpActivity.this,(String)msg.obj, Toast.LENGTH_SHORT).show();
+                        break;
+                    case 7:
+                        Toast.makeText(SignUpActivity.this, "Email not verified", Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+                        finish();
+                        break;
                 }
             }
         };

@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -127,7 +128,15 @@ public class MainActivity extends AppCompatActivity {
                             handler.sendEmptyMessage(0);
                             //Toast.makeText(MainActivity.this,"Wrong EmailId or password",Toast.LENGTH_SHORT).show();
                         } else {
-                            handler.sendEmptyMessage(1);
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            if(user.isEmailVerified())
+                                handler.sendEmptyMessage(1);
+                            else{
+                                FirebaseAuth.getInstance().signOut();
+                                Message m = new Message();
+                                m.what = 4;
+                                handler.sendMessage(m);
+                            }
                         }
                     }
                 });
@@ -145,8 +154,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 1:
                         //startActivity(new Intent(MainActivity.this,MainActivity.class));
-                        //startActivity(new Intent(MainActivity.this,DrawerActivity.class));
-                        Toast.makeText(MainActivity.this,"Logged In",Toast.LENGTH_LONG).show();
+                        startActivity(new Intent(MainActivity.this,UserActivity.class));
+                        //Toast.makeText(MainActivity.this,"Logged In",Toast.LENGTH_LONG).show();
                         finish();
                         break;
                     case 2:
@@ -154,6 +163,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 3:
                         Toast.makeText(MainActivity.this, "Please enter password!", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 4:
+                        Toast.makeText(MainActivity.this,"Not verified",Toast.LENGTH_LONG).show();
                         break;
                 }
             }
